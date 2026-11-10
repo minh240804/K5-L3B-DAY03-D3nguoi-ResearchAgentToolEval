@@ -1,22 +1,12 @@
-# starter_v0 — tool declarations (intentionally vague).
-# Names and descriptions here are a rough first draft. Routing rules, name->handle
-# mapping, arg conventions (news/timeframe/Top), and the send-confirmation boundary
-# are NOT spelled out anywhere yet. Your job is to make these declarations + the
-# system prompt good enough that the agent routes correctly on the eval.
+# starter_v0 — tool declarations.
 #
 # If you rename a tool, keep the name in sync across:
 #   this file  ->  tools/__init__.py (TOOL_FUNCTIONS)  ->  data/eval_base.json + data/eval_research_extension.json
 # `pytest tests/test_tool_contract.py` checks this sync for you.
-#
-# TODO CP2 (student):
-#   - Rewrite every description: what it does, WHEN to use it, WHEN NOT to use it.
-#   - Spell out arg conventions in parameter descriptions (handle format, topic/timeframe, search_type).
-#   - Make the `send` confirmation boundary explicit.
-#   - Declare your new tool(s) at the end of this file.
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Hỏi lại người dùng khi thiếu thông tin thiết yếu; dùng thay vì đoán handle, URL hoặc chi tiết bắt buộc."
     parameters:
       type: object
       properties:
@@ -26,37 +16,37 @@ tools:
       required: [question]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: "Lấy bài đăng gần đây từ một tài khoản X cụ thể. Chỉ dùng khi người dùng nêu tài khoản; không dùng để tìm bài theo chủ đề."
     parameters:
       type: object
       properties:
-        screenname: {type: string, default: "", description: "Tên tài khoản"}
+        screenname: {type: string, default: "", description: "Handle X không có ký tự @; phải được người dùng cung cấp."}
         limit: {type: integer, default: 5, description: "Số lượng"}
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: "Tìm bài đăng trên X theo chủ đề hoặc từ khóa. Dùng khi người dùng hỏi về tweet/bài đăng theo chủ đề; nếu yêu cầu cả web và X thì gọi cùng lookup."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
+        query: {type: string, default: "", description: "Chủ đề/từ khóa ngắn gọn; không chép cả yêu cầu hoặc tự thêm từ liên quan."}
         search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
         limit: {type: integer, default: 5, description: "Số lượng"}
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Tìm kiếm thông tin trên web, gồm tin tức. Dùng topic=news cho tin thời sự; dùng timeframe=day khi người dùng nói hôm nay. Nếu người dùng cũng yêu cầu bài đăng X, gọi thêm social_search."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
-        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
+        query: {type: string, default: "", description: "Chủ đề/từ khóa ngắn gọn, ví dụ AI; không chép cả yêu cầu hoặc tự thêm từ liên quan. Đặt loại tin và thời gian ở topic/timeframe."}
+        topic: {type: string, enum: [general, news], default: "general", description: "Dùng news cho tin tức/thời sự; general cho tra cứu web thông thường."}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "day=hôm nay/24 giờ, week=tuần, month=tháng, year=năm."}
         max_results: {type: integer, default: 5, description: "Số kết quả"}
       required: [query]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Đọc nội dung từ URL cụ thể do người dùng cung cấp; không dùng để tìm kiếm và không tự đoán URL."
     parameters:
       type: object
       properties:
@@ -86,7 +76,7 @@ tools:
 
   # ---------------- Bonus tools ----------------
   - name: send
-    description: "Gửi một đoạn văn bản đi."
+    description: "Gửi nội dung lên Telegram chỉ sau khi người dùng xác nhận rõ ràng; nếu chưa xác nhận, hỏi bằng clarify và không gọi send."
     parameters:
       type: object
       properties:
@@ -123,3 +113,13 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+      
+  - name: text_cleaner
+    description: "Chuyển HTML hoặc Markdown thành văn bản thuần."
+    parameters:
+      type: object
+      properties:
+        text:
+          type: string
+          description: "Nội dung HTML hoặc Markdown cần làm sạch, không phải URL."
+      required: [text]

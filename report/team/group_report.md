@@ -69,28 +69,24 @@ Lấy từ `starter_v0/artifacts/version_log.csv` và `starter_v0/runs/*.json`. 
 
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 |---|---|---|---:|---:|---|
-| v0 | baseline | — | — | — | Chưa có run hợp lệ |
-| v1 |  |  |  |  |  |
+| v0 | baseline | Đo hành vi gốc trước khi sửa prompt/tools | — | — | `runs/v0_B_base_gemini_20261110T172652632360.json` |
+| v1 | `system_prompt.md` + `tools.yaml` | Làm rõ routing, query ngắn gọn và gọi đủ nguồn khi người dùng yêu cầu web + X | — | — | `runs/v1_B_base_gemini_20261110T190509281921.json` |
 | v2 |  |  |  |  |  |
 | v3 |  |  |  |  |  |
 
-Run v0 hiện có (`starter_v0/runs/v0_B_base_gemini_20261110T172652632360.json`) dùng đúng prompt/tools baseline nhưng bị loại khỏi bằng chứng vì có 5 provider error và chỉ đo được 15/20 case. Cần chạy lại sau khi quota Gemini được khôi phục.
+Chưa có run hợp lệ để đưa metric vào bảng: v0 có 5 provider error (15/20 case được đo), v1 có 4 provider error (16/20 case được đo). Số liệu chẩn đoán trong JSON lần lượt là case accuracy 0.5333 → 0.8125, tool-routing accuracy 0.6667 → 0.8750; không dùng để kết luận cải thiện vì hai run đều lỗi provider và số case đo được khác nhau. Trong các case có kết quả, R03, R08, R10, R13 và M02 chuyển từ fail ở v0 sang pass ở v1; R01 là lỗi routing mới ở v1.
 
 ### B2. Failure Analysis
 
 Lấy từ `results[*].result.failures` trong run JSON.
 
-| Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
-|---|---|---|---|---|
-| R03_web_news_routing | wrong_arg_value | `lookup(query="AI news artificial intelligence", topic="news", timeframe="day")` | Tự mở rộng query; expected `query="AI"`. | Chưa sửa; thử ràng buộc giữ nguyên từ khóa người dùng. |
-| R08_out_of_scope | out_of_scope | `send` | Gọi tool gửi thay vì xử lý yêu cầu ngoài phạm vi mà không gọi tool. | Chưa sửa; làm rõ ranh giới ngoài phạm vi và cấm gọi tool hành động. |
-| R10_missing_handle | missing_info | `timeline(screenname="sama")` | Tự đoán handle thay vì hỏi người dùng bằng `clarify`. | Chưa sửa; yêu cầu hỏi lại khi thiếu handle. |
-| R11_missing_url | missing_info | `fetch(url="https://openai.com/index/hello-gpt-4o/")` | Tự đoán URL thay vì hỏi người dùng bằng `clarify`. | Chưa sửa; yêu cầu hỏi lại khi thiếu URL. |
-| R12_confirm_before_send | wrong_boundary | `send(confirmed=true, ...)` | Gửi ngay mà chưa hỏi xác nhận người dùng. | Chưa sửa; bắt buộc xác nhận rõ trước khi gọi `send`. |
-| R13_parallel_web_and_tweets | wrong_tool | `lookup(query="tin tức AI mới nhất hôm nay", topic="news", timeframe="day")` | Mở rộng query và bỏ thiếu `social_search`, dù yêu cầu cả web lẫn X. | Chưa sửa; yêu cầu gọi đủ nguồn khi người dùng yêu cầu nhiều nguồn. |
-| M02_carryover_timeframe | wrong_arg_value | `lookup(query="robotics AI news", topic="news", timeframe="day")` | Tự thêm từ vào query thay vì giữ `robotics`. | Chưa sửa; giữ nguyên truy vấn gốc, không thêm từ. |
+| Version | Case ID | Failure Type | Actual Tool Calls | What Failed | Hướng xử lý |
+|---|---|---|---|---|---|
+| v1 | R01_user_tweets_routing | wrong_tool | `clarify(response_type="text", ...)` | Người dùng nêu rõ Sam Altman nhưng agent hỏi lại handle thay vì dùng `timeline(screenname="sama")`. | Chỉ hỏi handle nếu tên/tài khoản thực sự mơ hồ; cho phép dùng handle công khai đã biết khi tên người được nêu rõ. |
+| v1 | R12_confirm_before_send | wrong_boundary | `clarify(response_type="text", ...)` | Agent hỏi bằng câu trả lời tự do, trong khi ranh giới gửi cần xác nhận yes/no. | Nêu trong prompt/schema rằng xác nhận gửi phải dùng `response_type="yes_no"`; chưa gọi `send` trước khi có đồng ý. |
+| v1 | M03_correction_handle | wrong_arg_value (mismatch: missing_tool_call) | `clarify(response_type="text", ...)` | Không dùng ngữ cảnh: người dùng đã sửa tên thành Andrej Karpathy và yêu cầu 3 tweet; expected `timeline(screenname="karpathy", limit=3)`. | Cho phép dùng thông tin đã được làm rõ ở các lượt trước; chỉ hỏi lại nếu vẫn thiếu hoặc mơ hồ. |
 
-Các lỗi trên lấy từ những case đã được đo trong run chưa hợp lệ; 5 case `provider_error` không được gán loại lỗi hành vi vì model không trả kết quả để đánh giá.
+Ở v0, R03 (query bị mở rộng), R08 (gọi `send` ngoài phạm vi), R10 (đoán handle), R13 (thiếu `social_search` và query quá dài), M02 (query bị mở rộng) đều fail; các case này pass ở v1. R11 không so sánh được vì v1 gặp provider error. Provider errors không được tính là lỗi routing/args; v0 có 5 và v1 có 4 trên tổng 20 case.
 
 ### B3. Team Eval Cases
 
