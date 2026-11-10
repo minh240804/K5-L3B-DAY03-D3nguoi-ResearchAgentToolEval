@@ -110,13 +110,26 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
 #   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
 #   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
 
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+def test_text_cleaner_converts_html_and_markdown_to_plain_text() -> None:
+    result = TOOL_FUNCTIONS["text_cleaner"](
+        text="# Tiêu đề\n<p>Xin <strong>chào</strong> &amp; [OpenAI](https://openai.com).</p>"
+    )
+
+    assert result == {
+        "tool": "text_cleaner",
+        "text": "Tiêu đề\nXin chào & OpenAI.",
+    }
 
 
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+@pytest.mark.parametrize("text", ["", "   ", None, 123])
+def test_text_cleaner_rejects_empty_or_non_string_input(text) -> None:
+    result = TOOL_FUNCTIONS["text_cleaner"](text=text)
+
+    assert result["tool"] == "text_cleaner"
+    assert result["error"] == "invalid_input"
 
 
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+def test_text_cleaner_handles_incomplete_html_without_raising() -> None:
+    result = TOOL_FUNCTIONS["text_cleaner"](text="<p>Nội dung <strong>chưa đóng")
+
+    assert result == {"tool": "text_cleaner", "text": "Nội dung chưa đóng"}
