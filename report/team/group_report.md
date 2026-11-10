@@ -8,9 +8,9 @@
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
+- Tên nhóm: D3nguoi
 - Thành viên và phân công: xem [TEAM.md](../../TEAM.md)
-- Provider/model dùng cho v0–v3:
+- Provider/model dùng cho v0–v3: gemini-3.6-flash
 
 ## 2. Mục tiêu và cách tiếp cận — PHẦN A: Giới thiệu agent
 
@@ -36,9 +36,16 @@ Ví dụ: "Research agent: tìm tin theo từ khóa / theo tài khoản, đọc 
 
 | Tên tool | Làm được gì | Tool mới nhóm thêm? |
 |---|---|---|
-| clarify | hỏi lại người dùng khi thiếu thông tin | không |
-|  |  |  |
-|  |  |  |
+| clarify | Hỏi người dùng để làm rõ thông tin còn thiếu và chờ lượt trả lời tiếp theo. | không |
+| timeline | Lấy các bài đăng gần đây từ một tài khoản X theo tên handle. | không |
+| social_search | Tìm bài đăng trên X theo từ khóa, sắp xếp mới nhất hoặc nổi bật. | không |
+| lookup | Tìm thông tin trên web theo chủ đề và khoảng thời gian bằng Tavily. | không |
+| fetch | Đọc nội dung của một URL bằng Firecrawl. | không |
+| format | Định dạng các dữ liệu đã thu thập thành digest Markdown theo mẫu; không tự tìm dữ liệu. | không |
+| send | Gửi nội dung lên kênh Telegram; chỉ gửi khi có xác nhận `confirmed=true`. | không |
+| policy | Tìm các đoạn liên quan trong tài liệu chính sách nội bộ và trả kèm nguồn. | không |
+| papers | Tìm bài báo trên arXiv và trả thông tin bài báo. | không |
+| paper_text | Tải PDF arXiv, trích xuất văn bản cục bộ và lưu file PDF/văn bản. | không |
 
 ### A3. Câu hỏi mẫu để thử
 
@@ -62,10 +69,12 @@ Lấy từ `starter_v0/artifacts/version_log.csv` và `starter_v0/runs/*.json`. 
 
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 |---|---|---|---:|---:|---|
-| v0 | baseline |  |  |  |  |
+| v0 | baseline | — | — | — | Chưa có run hợp lệ |
 | v1 |  |  |  |  |  |
 | v2 |  |  |  |  |  |
 | v3 |  |  |  |  |  |
+
+Run v0 hiện có (`starter_v0/runs/v0_B_base_gemini_20261110T172652632360.json`) dùng đúng prompt/tools baseline nhưng bị loại khỏi bằng chứng vì có 5 provider error và chỉ đo được 15/20 case. Cần chạy lại sau khi quota Gemini được khôi phục.
 
 ### B2. Failure Analysis
 
@@ -73,7 +82,15 @@ Lấy từ `results[*].result.failures` trong run JSON.
 
 | Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
 |---|---|---|---|---|
-|  |  |  |  |  |
+| R03_web_news_routing | wrong_arg_value | `lookup(query="AI news artificial intelligence", topic="news", timeframe="day")` | Tự mở rộng query; expected `query="AI"`. | Chưa sửa; thử ràng buộc giữ nguyên từ khóa người dùng. |
+| R08_out_of_scope | out_of_scope | `send` | Gọi tool gửi thay vì xử lý yêu cầu ngoài phạm vi mà không gọi tool. | Chưa sửa; làm rõ ranh giới ngoài phạm vi và cấm gọi tool hành động. |
+| R10_missing_handle | missing_info | `timeline(screenname="sama")` | Tự đoán handle thay vì hỏi người dùng bằng `clarify`. | Chưa sửa; yêu cầu hỏi lại khi thiếu handle. |
+| R11_missing_url | missing_info | `fetch(url="https://openai.com/index/hello-gpt-4o/")` | Tự đoán URL thay vì hỏi người dùng bằng `clarify`. | Chưa sửa; yêu cầu hỏi lại khi thiếu URL. |
+| R12_confirm_before_send | wrong_boundary | `send(confirmed=true, ...)` | Gửi ngay mà chưa hỏi xác nhận người dùng. | Chưa sửa; bắt buộc xác nhận rõ trước khi gọi `send`. |
+| R13_parallel_web_and_tweets | wrong_tool | `lookup(query="tin tức AI mới nhất hôm nay", topic="news", timeframe="day")` | Mở rộng query và bỏ thiếu `social_search`, dù yêu cầu cả web lẫn X. | Chưa sửa; yêu cầu gọi đủ nguồn khi người dùng yêu cầu nhiều nguồn. |
+| M02_carryover_timeframe | wrong_arg_value | `lookup(query="robotics AI news", topic="news", timeframe="day")` | Tự thêm từ vào query thay vì giữ `robotics`. | Chưa sửa; giữ nguyên truy vấn gốc, không thêm từ. |
+
+Các lỗi trên lấy từ những case đã được đo trong run chưa hợp lệ; 5 case `provider_error` không được gán loại lỗi hành vi vì model không trả kết quả để đánh giá.
 
 ### B3. Team Eval Cases
 

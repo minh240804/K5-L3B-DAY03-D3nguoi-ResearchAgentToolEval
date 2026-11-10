@@ -2,10 +2,10 @@
 
 ## Thông tin nhóm
 
-- Tên nhóm:
-- Lớp: L3A / L3B
-- Repo nhóm: `K5-L3A-DAY03-TenNhom-ResearchAgentToolEval` hoặc `K5-L3B-DAY03-TenNhom-ResearchAgentToolEval` (xem [SUBMISSION.md](SUBMISSION.md))
-- URL repo, nhánh nộp, commit chốt:
+- Tên nhóm: D3nguoi
+- Lớp: L3B
+- Repo nhóm: https://github.com/minh240804/K5-L3-DAY03-D3nguoi-ResearchAgentToolEval.git
+- URL repo, nhánh nộp, commit chốt: https://github.com/minh240804/K5-L3-DAY03-D3nguoi-ResearchAgentToolEval.git
 
 ## Thành viên
 
@@ -13,6 +13,8 @@
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 |        |      |       |        |         |
 |   2 |        |      |       |        |         |
+|   3 |        |      |       |        |         |
+
 
 ## Cá nhân
 
