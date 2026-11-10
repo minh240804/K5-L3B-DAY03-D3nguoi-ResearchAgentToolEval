@@ -3,5 +3,56 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_text_cleaner_html_markdown",
+      "phase": "B",
+      "query": "Chuyển đoạn sau thành văn bản thuần: <h1>AI</h1> **Tin mới**",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "text_cleaner",
+            "args": {
+              "text": "<h1>AI</h1> **Tin mới**"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Nội dung HTML/Markdown có sẵn được chuyển qua text_cleaner."
+      }
+    },
+    {
+      "id": "G02_text_cleaner_url_fetch_first",
+      "phase": "B",
+      "query": "Lấy nội dung ở https://example.com/article rồi chuyển thành văn bản thuần.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.com/article"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Khi chỉ có URL, agent phải fetch nội dung trước khi làm sạch."
+      }
+    },
+    {
+      "id": "G03_text_cleaner_not_for_summary",
+      "phase": "B",
+      "query": "Tóm tắt ngắn câu này: Trí tuệ nhân tạo đang thay đổi cách con người làm việc.",
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Yêu cầu tóm tắt văn bản thường không cần text_cleaner."
+      }
+    }
+  ]
 }
