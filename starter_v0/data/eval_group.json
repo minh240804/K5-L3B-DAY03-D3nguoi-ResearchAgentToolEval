@@ -19,8 +19,8 @@
       "expect": {
         "tool_calls": [
           {
-            "tool": "clarify",
-            "arguments": {
+            "name": "clarify",
+            "args": {
               "question": "Bạn muốn xem bài đăng mới nhất từ tài khoản nào?"
             }
           }
@@ -38,8 +38,8 @@
       "expect": {
         "tool_calls": [
           {
-            "tool": "clarify",
-            "arguments": {
+            "name": "clarify",
+            "args": {
               "question": "Bạn có thể gửi URL hoặc tên bài báo cần đọc không?"
             }
           }
@@ -57,8 +57,8 @@
       "expect": {
         "tool_calls": [
           {
-            "tool": "clarify",
-            "arguments": {
+            "name": "clarify",
+            "args": {
               "question": "Bạn muốn gửi nội dung nào và đến đâu? Tôi sẽ hiển thị nội dung cuối cùng để bạn xác nhận trước khi gửi."
             }
           }
@@ -76,8 +76,8 @@
       "expect": {
         "tool_calls": [
           {
-            "tool": "lookup",
-            "arguments": {
+            "name": "lookup",
+            "args": {
               "query": "robot",
               "topic": "news",
               "timeframe": "week"
@@ -105,16 +105,16 @@
       "id": "G06_multiturn_account_correction",
       "phase": "B",
       "turns": [
-        "Lấy 5 bài đăng mới nhất của Sam Altman.",
-        "Không phải Sam Altman, tôi muốn xem Andrej Karpathy.",
-        "Giữ số lượng là 5."
+        {"role": "user", "content": "Lấy 5 bài đăng mới nhất của Sam Altman."},
+        {"role": "user", "content": "Không phải Sam Altman, tôi muốn xem Andrej Karpathy."},
+        {"role": "user", "content": "Giữ số lượng là 5."}
       ],
       "failure_type": "wrong_arg_value",
       "expect": {
         "tool_calls": [
           {
-            "tool": "timeline",
-            "arguments": {
+            "name": "timeline",
+            "args": {
               "screenname": "karpathy",
               "limit": 5
             }
@@ -129,16 +129,16 @@
       "id": "G07_multiturn_timeframe_carryover",
       "phase": "B",
       "turns": [
-        "Tìm tin tức AI trong hôm nay.",
-        "Đổi chủ đề sang robotics.",
-        "Chỉ tìm robotics thôi, vẫn trong hôm nay."
+        {"role": "user", "content": "Tìm tin tức AI trong hôm nay."},
+        {"role": "user", "content": "Đổi chủ đề sang robotics."},
+        {"role": "user", "content": "Chỉ tìm robotics thôi, vẫn trong hôm nay."}
       ],
       "failure_type": "wrong_arg_value",
       "expect": {
         "tool_calls": [
           {
-            "tool": "lookup",
-            "arguments": {
+            "name": "lookup",
+            "args": {
               "query": "robotics",
               "topic": "news",
               "timeframe": "day"
@@ -154,16 +154,16 @@
       "id": "G08_multiturn_limit_correction",
       "phase": "B",
       "turns": [
-        "Lấy 10 bài đăng mới nhất của Elon Musk.",
-        "Chỉ lấy 3 bài thôi.",
-        "Vẫn là tài khoản Elon Musk nhé."
+        {"role": "user", "content": "Lấy 10 bài đăng mới nhất của Elon Musk."},
+        {"role": "user", "content": "Chỉ lấy 3 bài thôi."},
+        {"role": "user", "content": "Vẫn là tài khoản Elon Musk nhé."}
       ],
       "failure_type": "wrong_arg_value",
       "expect": {
         "tool_calls": [
           {
-            "tool": "timeline",
-            "arguments": {
+            "name": "timeline",
+            "args": {
               "screenname": "elonmusk",
               "limit": 3
             }
@@ -178,22 +178,22 @@
       "id": "G09_multitool_research",
       "phase": "B",
       "turns": [
-        "Tìm tin tức AI hôm nay trên web và các bài đăng đang được thảo luận về AI trên Twitter."
+        {"role": "user", "content": "Tìm tin tức AI hôm nay trên web và các bài đăng đang được thảo luận về AI trên Twitter."}
       ],
       "failure_type": "wrong_tool",
       "expect": {
         "tool_calls": [
           {
-            "tool": "lookup",
-            "arguments": {
+            "name": "lookup",
+            "args": {
               "query": "AI",
               "topic": "news",
               "timeframe": "day"
             }
           },
           {
-            "tool": "social_search",
-            "arguments": {
+            "name": "social_search",
+            "args": {
               "query": "AI",
               "search_type": "Latest"
             }
@@ -207,13 +207,16 @@
     {
       "id": "G10_format_without_search",
       "phase": "B",
-      "query": "Hãy trình bày lại danh sách nguồn sau thành bullet points, không cần tìm thêm: nguồn A, nguồn B, nguồn C.",
+      "turns": [
+        {"role": "user", "content": "Danh sách nguồn gồm: nguồn A, nguồn B, nguồn C."},
+        {"role": "user", "content": "Hãy trình bày lại danh sách nguồn đó thành bullet points, không cần tìm thêm."}
+      ],
       "failure_type": "unnecessary_tool",
       "expect": {
         "tool_calls": [
           {
-            "tool": "format",
-            "arguments": {
+            "name": "format",
+            "args": {
               "template": "bullets"
             }
           }
