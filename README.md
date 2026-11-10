@@ -63,7 +63,7 @@ Tool có sẵn (`send`, `policy`, `papers`, `paper_text`) không tự được b
 **Setup (CP1)**
 - [ ] `TEAM.md` có tên nhóm và thành viên
 - [ ] `.env` có provider key + `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`
-- [ ] `python scripts/preflight_provider.py --provider openrouter` pass
+- [ ] `python scripts/preflight_provider.py --provider gemini` pass
 - [ ] `pytest` chạy được: contract test + example test xanh, TODO test đang `skipped`
 
 **Prompt & tool declaration (CP1, CP2)**
@@ -201,7 +201,7 @@ Copy-Item .env.example .env
 Điền `.env`. Tối thiểu nên có:
 
 ```bash
-OPENROUTER_API_KEY=<your-key>
+GEMINI_API_KEY=<your-key>
 TAVILY_API_KEY=<your-key>
 FIRECRAWL_API_KEY=<your-key>
 RAPIDAPI_KEY=<your-key>
@@ -213,7 +213,7 @@ Cách lấy từng key xem [docs/TOOL-SETUP.md](docs/TOOL-SETUP.md).
 Preflight:
 
 ```bash
-python scripts/preflight_provider.py --provider openrouter
+python scripts/preflight_provider.py --provider gemini
 ```
 
 Nếu preflight lỗi, sửa provider key, dependency hoặc mạng trước khi chạy eval.
@@ -224,7 +224,7 @@ Chạy bộ base eval cố định với nhãn `v0`:
 
 ```bash
 python run_eval.py \
-  --provider openrouter \
+  --provider gemini \
   --version v0 \
   --suite base \
   --eval-cases data/eval_base.json
@@ -270,9 +270,9 @@ Học phương pháp, không học thuộc đáp án:
 Chạy ít nhất ba version cải tiến:
 
 ```bash
-python run_eval.py --provider openrouter --version v1 --suite base --eval-cases data/eval_base.json
-python run_eval.py --provider openrouter --version v2 --suite base --eval-cases data/eval_base.json
-python run_eval.py --provider openrouter --version v3 --suite base --eval-cases data/eval_base.json
+python run_eval.py --provider gemini --version v1 --suite base --eval-cases data/eval_base.json
+python run_eval.py --provider gemini --version v2 --suite base --eval-cases data/eval_base.json
+python run_eval.py --provider gemini --version v3 --suite base --eval-cases data/eval_base.json
 ```
 
 Sau mỗi run, điền `artifacts/version_log.csv`:
@@ -300,7 +300,7 @@ Chạy:
 
 ```bash
 python run_eval.py \
-  --provider openrouter \
+  --provider gemini \
   --version v3 \
   --suite group \
   --eval-cases data/eval_group.json
@@ -310,7 +310,7 @@ Tùy chọn, chạy bộ extension:
 
 ```bash
 python run_eval.py \
-  --provider openrouter \
+  --provider gemini \
   --version v3 \
   --suite extension \
   --eval-cases data/eval_research_extension.json
@@ -344,7 +344,7 @@ Nguyên tắc: một test kiểm tra một hành vi, tên test mô tả hành vi
 `chat.py` dùng để chat nhiều lượt với agent. Mỗi lượt được ghi vào `transcripts/*.transcript.json`.
 
 ```bash
-python chat.py --provider openrouter --version v3
+python chat.py --provider gemini --version v3
 ```
 
 Thử ít nhất 3 lượt live, ví dụ:
