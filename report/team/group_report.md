@@ -117,9 +117,11 @@ Lấy từ `starter_v0/transcripts/*.transcript.json`.
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-| 1 | Làm sạch đoạn HTML chứa tiêu đề, đoạn văn và liên kết. | `text_cleaner` | `v0`, Gemini `gemini-3.6-flash`; `v0+p078051283705+td136a5f7cbdf` | Tool loại thẻ/markup, giải mã `&amp;`, chuẩn hóa khoảng trắng; agent trả lại văn bản thuần. |
+| 1 (v1) | Làm sạch HTML gồm thẻ `<h1>`, `<p>`, thực thể `&amp;` và khoảng trắng thừa. | `text_cleaner` | OpenAI-compatible provider, model `deepseek-ai/deepseek-v4.1-flash-1017`; `v1+pc56a1a73449b+t7d598fa6c7bd`; [transcript](../../starter_v0/transcripts/v1_openai_20261110T232345371435.transcript.json) | `answered`; tool loại thẻ HTML, giải mã `&amp;` và chuẩn hóa khoảng trắng thành văn bản thuần. |
+| 1 (v2) | Làm sạch HTML gồm thẻ `<h1>`, `<p>`, thực thể `&amp;` và khoảng trắng thừa. | `text_cleaner` | OpenAI-compatible provider, model `deepseek-ai/deepseek-v4.1-flash-1017`; `v2+pc56a1a73449b+t7d598fa6c7bd`; [transcript](../../starter_v0/transcripts/v2_openai_20261110T232407214966.transcript.json) | `answered`; kết quả văn bản thuần đúng nội dung, không còn markup hoặc khoảng trắng thừa. |
+| 1 (v3) | Làm sạch HTML gồm thẻ `<h1>`, `<p>`, thực thể `&amp;` và khoảng trắng thừa. | `text_cleaner` | OpenAI-compatible provider, model `deepseek-ai/deepseek-v4.1-flash-1017`; `v3+pc56a1a73449b+t7d598fa6c7bd`; [transcript](../../starter_v0/transcripts/v3_openai_20261110T232448462621.transcript.json) | `answered`; agent trả văn bản thuần và mô tả rõ các bước bỏ thẻ, giải mã thực thể, gộp khoảng trắng. |
 
-Hiện chỉ có transcript live chat v0 tại `starter_v0/transcripts/v0_gemini_20261110T190911198094.transcript.json`. `chat.py` tạo file transcript cho các phiên chat tương tác; các lần chạy `run_eval.py` v1–v3 chỉ ghi JSON vào `starter_v0/runs/`, không tự tạo transcript. Vì vậy B4 chưa có bằng chứng live chat v1–v3; cần chạy `chat.py --provider <provider> --version v1` (tương tự v2/v3) và thực hiện các lượt chat nếu muốn bổ sung.
+Ba phiên bản đều route đúng tới tool mới `text_cleaner`, có tool result thực tế và kết thúc với trạng thái `answered`. Cùng một request được dùng cho cả ba phiên để đối chiếu nhất quán. Transcript `v1_openai_20261110T232322045699.transcript.json` là lần chạy lỗi do console Windows không mã hóa được biểu tượng `🔧`, nên không được dùng làm bằng chứng kết quả.
 
 ### B5a. Required Evidence — Tool mới, unit test, UI
 

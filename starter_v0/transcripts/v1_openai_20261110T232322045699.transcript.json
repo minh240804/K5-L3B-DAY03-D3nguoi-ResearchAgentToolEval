@@ -1,0 +1,28 @@
+{
+  "transcript_id": "v1_openai_20261110T232322045699",
+  "version": "v1",
+  "artifact_version": "v1+pc56a1a73449b+t7d598fa6c7bd",
+  "prompt_hash": "c56a1a73449b61ea0f95b51445a9b862ea691e1fd6a64726773fa05bafa8c1d2",
+  "tools_hash": "7d598fa6c7bd10d469142836574d46a426de1fc7c90ad1d39d71a86e4bc27c73",
+  "provider": "openai",
+  "model": "deepseek-ai/deepseek-v4.1-flash-1017",
+  "system_prompt": "D:\\AI\\TrainCourse\\LAB\\buoi3_prompt\\K5-L3-DAY03-D3nguoi-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\AI\\TrainCourse\\LAB\\buoi3_prompt\\K5-L3-DAY03-D3nguoi-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "created_at": "2026-11-10T23:23:22",
+  "updated_at": "2026-11-10T23:23:37",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T23:23:22",
+      "user": "LÃ m sáº¡ch vÄƒn báº£n HTML sau thÃ nh vÄƒn báº£n thuáº§n: <h1>Research Agent</h1><p>  Káº¿t quáº£ &amp; báº±ng chá»©ng cáº§n rÃµ rÃ ng.  </p>",
+      "status": "provider_error",
+      "assistant_text": null,
+      "rounds": [],
+      "tool_events": [],
+      "error": "UnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f527' in position 0: character maps to <undefined>",
+      "ended_at": "2026-11-10T23:23:37"
+    }
+  ]
+}
