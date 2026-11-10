@@ -27,7 +27,7 @@
 - Run v3: [v3_B_base_openai_20261110T200349662898.json](../../starter_v0/runs/v3_B_base_openai_20261110T200349662898.json).
 - Lịch sử phiên bản và metric: [version_log.csv](../../starter_v0/artifacts/version_log.csv).
 - Báo cáo nhóm: [group_report.md](./group_report.md).
-- AI/công cụ và cách kiểm tra: các thay đổi được đối chiếu với system prompt, tool schema, version log và run JSON; kết quả run được dùng làm bằng chứng thay vì chỉ dựa vào nhận định. Chưa ghi nhận riêng trong tài liệu hiện có công cụ AI cá nhân hoặc quy trình kiểm tra độc lập ngoài các bằng chứng dự án nêu trên.
+- AI/công cụ và cách kiểm tra: các thay đổi được đối chiếu với system prompt, tool schema, version log và run JSON; kết quả run được dùng làm bằng chứng thay vì chỉ dựa vào nhận định. 
 
 ## 5. Tự đánh giá
 
