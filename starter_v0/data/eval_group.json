@@ -1,7 +1,227 @@
 {
   "dataset_id": "day03_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp.",
+  "allowed_failure_types": [
+    "wrong_tool",
+    "wrong_arg_value",
+    "wrong_boundary",
+    "unnecessary_tool",
+    "out_of_scope",
+    "missing_info"
+  ],
+  "cases": [
+    {
+      "id": "G01_missing_account",
+      "phase": "B",
+      "query": "Tóm tắt 5 bài đăng mới nhất giúp tôi.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "clarify",
+            "arguments": {
+              "question": "Bạn muốn xem bài đăng mới nhất từ tài khoản nào?"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải hỏi tên tài khoản khi người dùng chưa cung cấp tài khoản cần xem."
+      }
+    },
+    {
+      "id": "G02_missing_url",
+      "phase": "B",
+      "query": "Đọc và tóm tắt bài báo này giúp tôi.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "clarify",
+            "arguments": {
+              "question": "Bạn có thể gửi URL hoặc tên bài báo cần đọc không?"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent không được tự đoán URL khi người dùng chưa cung cấp nguồn cụ thể."
+      }
+    },
+    {
+      "id": "G03_send_confirmation",
+      "phase": "B",
+      "query": "Gửi bản tin AI này lên Telegram cho tôi.",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "clarify",
+            "arguments": {
+              "question": "Bạn muốn gửi nội dung nào và đến đâu? Tôi sẽ hiển thị nội dung cuối cùng để bạn xác nhận trước khi gửi."
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải yêu cầu thông tin còn thiếu và xác nhận nội dung, đích gửi trước khi gọi send."
+      }
+    },
+    {
+      "id": "G04_lookup_arguments",
+      "phase": "B",
+      "query": "Tìm tin tức về robot trong tuần này.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "lookup",
+            "arguments": {
+              "query": "robot",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải phân tách chủ đề tìm kiếm, loại nội dung và khoảng thời gian vào đúng arguments."
+      }
+    },
+    {
+      "id": "G05_out_of_scope",
+      "phase": "B",
+      "query": "Giải thích sự khác nhau giữa CNN và Vision Transformer.",
+      "failure_type": "out_of_scope",
+      "expect": {
+        "no_tool": true
+      },
+      "metadata": {
+        "what_it_tests": "Agent không cần gọi research tools cho câu hỏi kiến thức có thể trả lời trực tiếp."
+      }
+    },
+    {
+      "id": "G06_multiturn_account_correction",
+      "phase": "B",
+      "turns": [
+        "Lấy 5 bài đăng mới nhất của Sam Altman.",
+        "Không phải Sam Altman, tôi muốn xem Andrej Karpathy.",
+        "Giữ số lượng là 5."
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "timeline",
+            "arguments": {
+              "screenname": "karpathy",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải cập nhật tài khoản theo thông tin sửa đổi và giữ nguyên giới hạn số lượng."
+      }
+    },
+    {
+      "id": "G07_multiturn_timeframe_carryover",
+      "phase": "B",
+      "turns": [
+        "Tìm tin tức AI trong hôm nay.",
+        "Đổi chủ đề sang robotics.",
+        "Chỉ tìm robotics thôi, vẫn trong hôm nay."
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "lookup",
+            "arguments": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải giữ timeframe đã có, thay chủ đề cũ bằng chủ đề mới và không trộn AI vào query."
+      }
+    },
+    {
+      "id": "G08_multiturn_limit_correction",
+      "phase": "B",
+      "turns": [
+        "Lấy 10 bài đăng mới nhất của Elon Musk.",
+        "Chỉ lấy 3 bài thôi.",
+        "Vẫn là tài khoản Elon Musk nhé."
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "timeline",
+            "arguments": {
+              "screenname": "elonmusk",
+              "limit": 3
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải cập nhật limit theo yêu cầu mới nhất và giữ nguyên tài khoản."
+      }
+    },
+    {
+      "id": "G09_multitool_research",
+      "phase": "B",
+      "turns": [
+        "Tìm tin tức AI hôm nay trên web và các bài đăng đang được thảo luận về AI trên Twitter."
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "lookup",
+            "arguments": {
+              "query": "AI",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          },
+          {
+            "tool": "social_search",
+            "arguments": {
+              "query": "AI",
+              "search_type": "Latest"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent phải nhận diện hai nguồn thông tin độc lập và gọi cả lookup lẫn social_search."
+      }
+    },
+    {
+      "id": "G10_format_without_search",
+      "phase": "B",
+      "query": "Hãy trình bày lại danh sách nguồn sau thành bullet points, không cần tìm thêm: nguồn A, nguồn B, nguồn C.",
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "tool": "format",
+            "arguments": {
+              "template": "bullets"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Agent nên dùng format để tổ chức dữ liệu đã có, không gọi lookup hoặc social_search khi người dùng không yêu cầu tìm kiếm."
+      }
+    }
+  ]
 }
