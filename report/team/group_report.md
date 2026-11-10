@@ -69,12 +69,12 @@ Lấy từ `starter_v0/artifacts/version_log.csv` và `starter_v0/runs/*.json`. 
 
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 |---|---|---|---:|---:|---|
-| v0 | baseline | Đo hành vi gốc trước khi sửa prompt/tools | — | — | `runs/v0_B_base_gemini_20261110T172652632360.json` |
-| v1 | `system_prompt.md` + `tools.yaml` | Làm rõ routing, query ngắn gọn và gọi đủ nguồn khi người dùng yêu cầu web + X | — | — | `runs/v1_B_base_gemini_20261110T190509281921.json` |
-| v2 |  |  |  |  |  |
+| v0 | baseline | Đo hành vi gốc trước khi sửa prompt/tools | Không hợp lệ | Không hợp lệ | `runs/v0_B_base_gemini_20261110T172652632360.json` |
+| v1 | `system_prompt.md` + `tools.yaml` | Làm rõ routing, query ngắn gọn và gọi đủ nguồn khi người dùng yêu cầu web + X | Không hợp lệ | Không hợp lệ | `runs/v1_B_base_gemini_20261110T190509281921.json` |
+| v2 | `system_prompt.md` + `tools.yaml` | Làm rõ xác nhận yes/no trước hành động có side effect | — (v1 không hợp lệ) | 0.9000 | `runs/v2_B_base_openai_20261110T194931562980.json` |
 | v3 |  |  |  |  |  |
 
-Chưa có run hợp lệ để đưa metric vào bảng: v0 có 5 provider error (15/20 case được đo), v1 có 4 provider error (16/20 case được đo). Số liệu chẩn đoán trong JSON lần lượt là case accuracy 0.5333 → 0.8125, tool-routing accuracy 0.6667 → 0.8750; không dùng để kết luận cải thiện vì hai run đều lỗi provider và số case đo được khác nhau. Trong các case có kết quả, R03, R08, R10, R13 và M02 chuyển từ fail ở v0 sang pass ở v1; R01 là lỗi routing mới ở v1.
+V2 là run hợp lệ: provider `openai`, model `deepseek-ai/deepseek-v4.1-flash-1017`, 20/20 case được đo, 0 provider error, 18/20 pass. Các metric khác: tool-routing accuracy 0.9500, argument accuracy 0.9000, multiturn accuracy 1.0000. V0 và v1 không hợp lệ (lần lượt 5 và 4 provider errors), nên không dùng metric của chúng làm mốc so sánh. Dù v2 cải thiện so với các kết quả chẩn đoán trước đó, không thể quy toàn bộ thay đổi cho prompt/tools vì provider/model khác nhau giữa các run. V2 vẫn còn một lỗi `wrong_boundary` ở R12.
 
 ### B2. Failure Analysis
 
@@ -82,11 +82,20 @@ Lấy từ `results[*].result.failures` trong run JSON.
 
 | Version | Case ID | Failure Type | Actual Tool Calls | What Failed | Hướng xử lý |
 |---|---|---|---|---|---|
-| v1 | R01_user_tweets_routing | wrong_tool | `clarify(response_type="text", ...)` | Người dùng nêu rõ Sam Altman nhưng agent hỏi lại handle thay vì dùng `timeline(screenname="sama")`. | Chỉ hỏi handle nếu tên/tài khoản thực sự mơ hồ; cho phép dùng handle công khai đã biết khi tên người được nêu rõ. |
-| v1 | R12_confirm_before_send | wrong_boundary | `clarify(response_type="text", ...)` | Agent hỏi bằng câu trả lời tự do, trong khi ranh giới gửi cần xác nhận yes/no. | Nêu trong prompt/schema rằng xác nhận gửi phải dùng `response_type="yes_no"`; chưa gọi `send` trước khi có đồng ý. |
-| v1 | M03_correction_handle | wrong_arg_value (mismatch: missing_tool_call) | `clarify(response_type="text", ...)` | Không dùng ngữ cảnh: người dùng đã sửa tên thành Andrej Karpathy và yêu cầu 3 tweet; expected `timeline(screenname="karpathy", limit=3)`. | Cho phép dùng thông tin đã được làm rõ ở các lượt trước; chỉ hỏi lại nếu vẫn thiếu hoặc mơ hồ. |
+| v0 | R03_web_news_routing | wrong_tool (mismatch: wrong_arg_value) | `lookup(query="AI news artificial intelligence", topic="news", timeframe="day")` | Đã chọn đúng `lookup` nhưng query bị mở rộng; expected `query="AI"`. | V1 dùng quy tắc query ngắn gọn; case pass trong v1. |
+| v0 | R08_out_of_scope | out_of_scope | `send(confirmed=true, ...)` | Gọi tool gửi cho yêu cầu ngoài phạm vi. | Thêm quy tắc ranh giới tool/hành động; case pass trong v1. |
+| v0 | R10_missing_handle | missing_info | `timeline(screenname="sama", limit=5)` | Đoán handle khi người dùng chưa nêu tài khoản. | Yêu cầu hỏi lại khi thiếu thông tin thiết yếu; case pass trong v1. |
+| v0 | R11_missing_url | missing_info | `fetch(url="https://openai.com/index/hello-gpt-4o/")` | Tự đoán URL thay vì hỏi người dùng. | Quy định chỉ fetch URL do người dùng cung cấp; v1 gặp provider error ở case này. |
+| v0 | R12_confirm_before_send | wrong_boundary | `send(confirmed=true, ...)` | Gọi send ngay, không hỏi xác nhận trước. | Thêm quy tắc hỏi xác nhận trước hành động có side effect; v2 vẫn chưa đạt đúng response_type. |
+| v0 | R13_parallel_web_and_tweets | wrong_tool (mismatch: missing_tool_call + wrong_arg_value) | `lookup(query="tin tức AI mới nhất hôm nay", ...)` | Bỏ thiếu `social_search` và mở rộng query. | Thêm quy tắc gọi cả `lookup` và `social_search`; case pass trong v1/v2. |
+| v0 | M02_carryover_timeframe | wrong_arg_value | `lookup(query="robotics AI news", ...)` | Tự thêm từ vào query; expected `query="robotics"`. | Yêu cầu giữ query ngắn gọn; case pass trong v1/v2. |
+| v1 | R01_user_tweets_routing | wrong_tool | `clarify(response_type="text", ...)` | Người dùng nêu Sam Altman nhưng agent hỏi lại handle thay vì gọi `timeline`. | Nêu rõ khi tên người được xác định thì dùng handle công khai đã biết; chỉ hỏi khi mơ hồ. |
+| v1 | R12_confirm_before_send | wrong_boundary | `clarify(response_type="text", ...)` | Hỏi bằng kiểu text thay vì yes/no. | Bổ sung quy tắc yes/no; v2 vẫn fail do hỏi nội dung bản tin trước, chưa hỏi xác nhận. |
+| v1 | M03_correction_handle | wrong_arg_value (mismatch: missing_tool_call) | `clarify(response_type="text", ...)` | Không tận dụng ngữ cảnh tên Andrej Karpathy và số lượng 3 ở các lượt trước. | Làm rõ sử dụng thông tin đã được bổ sung ở lượt trước; case pass trong v2. |
+| v2 | R02_search_tweets_routing | wrong_tool (mismatch: extra_tool_call) | `social_search(query="GPT-5", search_type="Top", limit=10)` và `social_search(query="GPT-5", search_type="Latest", limit=10)` | Gọi cùng tool hai lần với hai kiểu sắp xếp; eval yêu cầu một lời gọi. | Chỉ gọi một lần theo một kiểu sắp xếp phù hợp yêu cầu; không tạo lời gọi lặp. |
+| v2 | R12_confirm_before_send | wrong_boundary | `clarify(response_type="text", ...)` | Chưa gửi, nhưng xin nội dung bản tin bằng text thay vì hỏi xác nhận yes/no như eval yêu cầu. Vì nội dung chưa có trong request, đây là thiếu nội dung đồng thời không khớp hành vi mà case đang chấm. | Tách bước xin nội dung khỏi bước xác nhận; sau khi có nội dung cụ thể, hỏi xác nhận yes/no trước khi gửi. |
 
-Ở v0, R03 (query bị mở rộng), R08 (gọi `send` ngoài phạm vi), R10 (đoán handle), R13 (thiếu `social_search` và query quá dài), M02 (query bị mở rộng) đều fail; các case này pass ở v1. R11 không so sánh được vì v1 gặp provider error. Provider errors không được tính là lỗi routing/args; v0 có 5 và v1 có 4 trên tổng 20 case.
+Phân tích chỉ gán lỗi hành vi cho case model đã trả kết quả; các provider-error cases không được tính là lỗi routing/args. Riêng v2 không có provider errors nên hai lỗi trong bảng là toàn bộ 2 case fail của run hợp lệ này.
 
 ### B3. Team Eval Cases
 

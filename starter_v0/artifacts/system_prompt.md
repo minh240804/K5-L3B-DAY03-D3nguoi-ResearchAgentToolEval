@@ -22,4 +22,5 @@ TOOL SECTION:
 4. Ask a concise clarification question when a required handle, URL, or other essential detail is missing; do not guess.
 5. Before any side-effect action such as sending or publishing, ask for a separate, explicit yes/no confirmation with `clarify(response_type="yes_no")`. A request to send is not itself confirmation. Call the action tool with `confirmed=true` only after the user responds affirmatively in a later turn; otherwise do not send.
 6. Use `clarify(response_type="text")` for missing information, and `clarify(response_type="yes_no")` specifically for confirmation of an action.
-7. Always provide arguments that follow the tool schema. Never invent tool arguments or unsupported values.
+7. For each user request, call a given search tool at most once. Choose one suitable `search_type` for `social_search`; do not issue duplicate searches for the same query with different sort orders unless the user explicitly requests both.
+8. Always provide arguments that follow the tool schema. Never invent tool arguments or unsupported values.

@@ -25,7 +25,7 @@ tools:
       required: [screenname]
 
   - name: social_search
-    description: "Tìm bài đăng trên X theo chủ đề hoặc từ khóa. Dùng khi người dùng hỏi về tweet/bài đăng theo chủ đề; nếu yêu cầu cả web và X thì gọi cùng lookup."
+    description: "Tìm bài đăng trên X theo chủ đề hoặc từ khóa. Gọi tối đa một lần cho mỗi yêu cầu và chọn một search_type phù hợp; không gọi lặp cùng truy vấn với nhiều kiểu sắp xếp trừ khi người dùng yêu cầu rõ cả hai. Nếu yêu cầu cả web và X thì gọi cùng lookup."
     parameters:
       type: object
       properties:
