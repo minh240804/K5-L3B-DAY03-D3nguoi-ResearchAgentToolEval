@@ -6,12 +6,12 @@
 tools:
   # ---------------- Core tools ----------------
   - name: clarify
-    description: "Hỏi lại người dùng khi thiếu thông tin thiết yếu; dùng thay vì đoán handle, URL hoặc chi tiết bắt buộc."
+    description: "Hỏi lại khi thiếu thông tin thiết yếu. Dùng response_type=text để xin thông tin; dùng response_type=yes_no để xác nhận riêng một hành động có side effect như gửi hoặc đăng."
     parameters:
       type: object
       properties:
         question: {type: string, default: "", description: "Câu hỏi"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Dùng yes_no để hỏi xác nhận hành động gửi/đăng; dùng text để xin thông tin còn thiếu; dùng choice khi cần chọn trong options."}
         options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
       required: [question]
 
@@ -76,12 +76,12 @@ tools:
 
   # ---------------- Bonus tools ----------------
   - name: send
-    description: "Gửi nội dung lên Telegram chỉ sau khi người dùng xác nhận rõ ràng; nếu chưa xác nhận, hỏi bằng clarify và không gọi send."
+    description: "Gửi nội dung lên Telegram. Không gọi chỉ vì người dùng yêu cầu gửi: trước tiên hỏi xác nhận riêng bằng clarify(response_type=yes_no), rồi chỉ gọi send với confirmed=true sau khi người dùng đồng ý rõ ràng ở lượt sau."
     parameters:
       type: object
       properties:
         text: {type: string, default: "", description: "Nội dung"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        confirmed: {type: boolean, default: false, description: "Chỉ true sau khi người dùng đã trả lời đồng ý với câu hỏi xác nhận yes/no ở lượt trước."}
       required: [text]
 
   - name: policy
