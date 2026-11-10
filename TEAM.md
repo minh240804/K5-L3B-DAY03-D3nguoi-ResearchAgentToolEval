@@ -83,3 +83,22 @@ Sao chép mục dưới đây cho từng thành viên.
 - Prompt và khai báo tool: [starter_v0/artifacts/system_prompt.md](starter_v0/artifacts/system_prompt.md), [starter_v0/artifacts/tools.yaml](starter_v0/artifacts/tools.yaml).
 - Các run v0–v1: [v0](starter_v0/runs/v0_B_base_gemini_20261110T172652632360.json), [v1](starter_v0/runs/v1_B_base_gemini_20261110T190509281921.json).
 - Eval cases nhóm: [starter_v0/data/eval_group.json](starter_v0/data/eval_group.json).
+
+## B3. Kết quả Team Eval Cases
+
+Kết quả chạy bộ 10 eval cases của nhóm với phiên bản v3, suite `group`:
+
+| Chỉ số | Kết quả |
+|---|---:|
+| `total_cases` | 10 |
+| `measured_cases` | 10 |
+| `provider_error_cases` | 0 |
+| `passed_cases` | 6 |
+| `case_accuracy` | 0.6 |
+| `tool_routing_accuracy` | 1.0 |
+| `argument_accuracy` | 0.6 |
+| `multiturn_accuracy` | 0.8 |
+
+- `failure_counts`: `{'missing_info': 2, 'wrong_boundary': 1, 'wrong_tool': 1}`
+- `observed_mismatch_counts`: `{'wrong_arg_value': 4}`
+- Bằng chứng: [starter_v0/runs/v3_B_group_openai_20261110T231118443862.json](starter_v0/runs/v3_B_group_openai_20261110T231118443862.json).

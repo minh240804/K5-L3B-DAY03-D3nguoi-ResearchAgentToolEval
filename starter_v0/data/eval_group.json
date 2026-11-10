@@ -20,11 +20,7 @@
         "tool_calls": [
           {
             "name": "clarify",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "question": "Bạn muốn xem bài đăng mới nhất từ tài khoản nào?"
             }
           }
@@ -43,11 +39,7 @@
         "tool_calls": [
           {
             "name": "clarify",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "question": "Bạn có thể gửi URL hoặc tên bài báo cần đọc không?"
             }
           }
@@ -66,11 +58,7 @@
         "tool_calls": [
           {
             "name": "clarify",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "question": "Bạn muốn gửi nội dung nào và đến đâu? Tôi sẽ hiển thị nội dung cuối cùng để bạn xác nhận trước khi gửi."
             }
           }
@@ -89,11 +77,7 @@
         "tool_calls": [
           {
             "name": "lookup",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "query": "robot",
               "topic": "news",
               "timeframe": "week"
@@ -130,11 +114,7 @@
         "tool_calls": [
           {
             "name": "timeline",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "screenname": "karpathy",
               "limit": 5
             }
@@ -158,11 +138,7 @@
         "tool_calls": [
           {
             "name": "lookup",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "query": "robotics",
               "topic": "news",
               "timeframe": "day"
@@ -187,11 +163,7 @@
         "tool_calls": [
           {
             "name": "timeline",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "screenname": "elonmusk",
               "limit": 3
             }
@@ -213,11 +185,7 @@
         "tool_calls": [
           {
             "name": "lookup",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "query": "AI",
               "topic": "news",
               "timeframe": "day"
@@ -225,11 +193,7 @@
           },
           {
             "name": "social_search",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "query": "AI",
               "search_type": "Latest"
             }
@@ -252,11 +216,7 @@
         "tool_calls": [
           {
             "name": "format",
-<<<<<<< HEAD
             "args": {
-=======
-            "arguments": {
->>>>>>> add114734d446a5d3c36af7c8ecfc00dc1d3ed4f
               "template": "bullets"
             }
           }
