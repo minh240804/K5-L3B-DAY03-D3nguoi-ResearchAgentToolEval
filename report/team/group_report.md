@@ -127,11 +127,11 @@ Ba phiên bản đều route đúng tới tool mới `text_cleaner`, có tool re
 
 | Item | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| Tool mới (`tools/<tên>/`) |  |  |  |
-| Unit test tool mới (≥ 3 test/tool) | `pytest` output (0 failed) |  |  |
-| UI (lệnh chạy + link dùng thử) |  |  |  |
+| Tool mới `text_cleaner` | [implementation](../../starter_v0/tools/text_cleaner/tool.py), [TOOL.md](../../starter_v0/tools/text_cleaner/TOOL.md), [schema](../../starter_v0/artifacts/tools.yaml), [đăng ký tool](../../starter_v0/tools/__init__.py) | Tool cục bộ chuyển HTML/Markdown được cung cấp trực tiếp thành văn bản thuần; loại markup và nội dung `script`/`style`, giải mã HTML entity, chuẩn hóa khoảng trắng. Tool không gọi API và không có side effect. | Chỉ nhận nội dung qua `text`, không dùng để đọc URL. Input rỗng hoặc sai kiểu trả lỗi `invalid_input` thay vì raise exception. Cách xử lý bằng regex không thay thế HTML parser đầy đủ cho tài liệu phức tạp. |
+| Unit test tool mới (≥ 3 test/tool) | [tests/test_tools_todo.py](../../starter_v0/tests/test_tools_todo.py), [contract tests](../../starter_v0/tests/test_tool_contract.py) | Có 3 test logic với 6 lượt kiểm tra: happy path HTML + Markdown; 4 input rỗng/sai kiểu; HTML chưa đóng thẻ. Chạy `python -m pytest tests/test_tools_todo.py tests/test_tool_contract.py -q` đạt `66 passed, 14 skipped`, `0 failed`. | Test HTML không hoàn chỉnh xác nhận tool không raise exception. Contract test bảo đảm tên và tham số đồng bộ với `tools.yaml`. 14 test bị skip là TODO của các tool có sẵn, không thuộc `text_cleaner`. |
+| UI (lệnh chạy + bằng chứng sử dụng) | [app.py](../../starter_v0/app.py); chạy `streamlit run app.py`; [transcript v1](../../starter_v0/transcripts/v1_openai_20261110T232345371435.transcript.json), [v2](../../starter_v0/transcripts/v2_openai_20261110T232407214966.transcript.json), [v3](../../starter_v0/transcripts/v3_openai_20261110T232448462621.transcript.json) | UI hỗ trợ chọn provider/model/version, chat nhiều lượt, xem tool call/tool result và lưu transcript. Ba transcript chứng minh agent route tới `text_cleaner` và trả văn bản thuần thành công. | UI chỉ gửi request tới provider do người dùng chọn. `text_cleaner` xử lý cục bộ, không thay đổi file nguồn và không thực hiện hành động bên ngoài. |
 
-Tool unit tests: số test đã viết, và một ví dụ lỗi mà unit test bắt được nhưng eval không bắt được.
+Ví dụ lỗi unit test bắt được nhưng eval không kiểm tra trực tiếp: caller truyền `text=None`, số nguyên hoặc chuỗi chỉ có khoảng trắng. Tool trả `{"tool": "text_cleaner", "error": "invalid_input", ...}` thay vì làm ứng dụng dừng vì exception.
 
 ### B5. Bonus Evidence
 
