@@ -13,7 +13,7 @@
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | Vũ Quang Minh | 2A202603727 | vuquangminh240804@gmail.com | https://github.com/minh240804 | Leader |
 |   2 | Hoàng Minh Diệp | 2A202603764 | hoangminhdiepnd2004@gmail.com | https://github.com/diep142 | Member |
-|   3 | Thành viên 3 |  |  |  | Member |
+|   3 | Thành viên 3 | 2A202603731 | manhgu3110@gmail.com | https://github.com/nguyenducmanh-itus | Member |
 
 
 ## Cá nhân
