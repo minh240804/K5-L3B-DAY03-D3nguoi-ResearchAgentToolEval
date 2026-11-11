@@ -61,37 +61,37 @@ Tool có sẵn (`send`, `policy`, `papers`, `paper_text`) không tự được b
 Đánh dấu khi xong. Mỗi dòng trỏ tới file cần sửa và bằng chứng cần nộp.
 
 **Setup (CP1)**
-- [ ] `TEAM.md` có tên nhóm và thành viên
-- [ ] `.env` có provider key + `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`
-- [ ] `python scripts/preflight_provider.py --provider gemini` pass
-- [ ] `pytest` chạy được: contract test + example test xanh, TODO test đang `skipped`
+- [v] `TEAM.md` có tên nhóm và thành viên
+- [v] `.env` có provider key + `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`
+- [v] `python scripts/preflight_provider.py --provider gemini` pass
+- [v] `pytest` chạy được: contract test + example test xanh, TODO test đang `skipped`
 
 **Prompt & tool declaration (CP1, CP2)**
-- [ ] Chạy baseline `v0`, ghi vào `artifacts/version_log.csv`
-- [ ] Liệt kê các case FAIL của `v0` và gán mỗi case một loại lỗi (`wrong_tool`, `wrong_arg_value`, `missing_info`, v.v.)
-- [ ] `artifacts/system_prompt.md`: bỏ các chỉ dẫn xấu cố ý của starter (đoán thay vì hỏi, gửi không cần xác nhận, ép một bước)
-- [ ] `artifacts/system_prompt.md`: thêm rule routing (khi nào `timeline` / `social_search` / `lookup` / `fetch` / `clarify`)
-- [ ] `artifacts/tools.yaml`: viết lại `description` mỗi tool: làm gì, **khi nào dùng / khi nào không dùng**
-- [ ] `artifacts/tools.yaml`: mô tả rõ convention args (handle không có `@`, `topic=news` cho tin tức, `timeframe`, `search_type=Top|Latest`)
-- [ ] `artifacts/tools.yaml`: `send` mô tả rõ chỉ gửi khi user đã xác nhận (`confirmed=true`)
-- [ ] `v1`, `v2`, `v3`: mỗi version **một** giả thuyết, metric trước/sau trong `version_log.csv`
+- [v] Chạy baseline `v0`, ghi vào `artifacts/version_log.csv`
+- [v] Liệt kê các case FAIL của `v0` và gán mỗi case một loại lỗi (`wrong_tool`, `wrong_arg_value`, `missing_info`, v.v.)
+- [v] `artifacts/system_prompt.md`: bỏ các chỉ dẫn xấu cố ý của starter (đoán thay vì hỏi, gửi không cần xác nhận, ép một bước)
+- [v] `artifacts/system_prompt.md`: thêm rule routing (khi nào `timeline` / `social_search` / `lookup` / `fetch` / `clarify`)
+- [v] `artifacts/tools.yaml`: viết lại `description` mỗi tool: làm gì, **khi nào dùng / khi nào không dùng**
+- [v] `artifacts/tools.yaml`: mô tả rõ convention args (handle không có `@`, `topic=news` cho tin tức, `timeframe`, `search_type=Top|Latest`)
+- [v] `artifacts/tools.yaml`: `send` mô tả rõ chỉ gửi khi user đã xác nhận (`confirmed=true`)
+- [v] `v1`, `v2`, `v3`: mỗi version **một** giả thuyết, metric trước/sau trong `version_log.csv`
 
 **Tool mới (CP3)**
-- [ ] `tools/<tên>/tool.py` + `TOOL.md` (frontmatter đúng contract trong `tools/README.md`)
-- [ ] Đăng ký trong `tools/__init__.py` (`TOOL_FUNCTIONS`) và `artifacts/tools.yaml`
-- [ ] Unit test cho tool mới trong `tests/test_tools_todo.py` (≥ 3 test)
-- [ ] Ít nhất 1 eval case trong `data/eval_group.json` kiểm tra model có route tới tool mới đúng lúc
+- [v] `tools/<tên>/tool.py` + `TOOL.md` (frontmatter đúng contract trong `tools/README.md`)
+- [v] Đăng ký trong `tools/__init__.py` (`TOOL_FUNCTIONS`) và `artifacts/tools.yaml`
+- [v] Unit test cho tool mới trong `tests/test_tools_todo.py` (≥ 3 test)
+- [v] Ít nhất 1 eval case trong `data/eval_group.json` kiểm tra model có route tới tool mới đúng lúc
 
 **Testing (CP3, CP4)**
-- [ ] `data/eval_group.json`: case cho model (routing / args / boundary), xem Step 4
-- [ ] `tests/test_tools_todo.py`: unit test cho code của tool, xem Step 4b
-- [ ] `pytest`: 0 failed; 3 test của tool mới không còn `skipped` (stub của tool có sẵn được phép còn skip)
+- [v] `data/eval_group.json`: case cho model (routing / args / boundary), xem Step 4
+- [v] `tests/test_tools_todo.py`: unit test cho code của tool, xem Step 4b
+- [v] `pytest`: 0 failed; 3 test của tool mới không còn `skipped` (stub của tool có sẵn được phép còn skip)
 
 **Demo & báo cáo (CP5)**
-- [ ] UI chạy được + link dùng thử
-- [ ] `chat.py`: ≥ 3 lượt live, có transcript
-- [ ] `report/team/group_report.md` Phần A trước 16:30, Phần B trước khi nộp
-- [ ] Mỗi thành viên có `report/team/MSSV_HoTen.md`
+- [v] UI chạy được + link dùng thử
+- [v] `chat.py`: ≥ 3 lượt live, có transcript
+- [v] `report/team/group_report.md` Phần A trước 16:30, Phần B trước khi nộp
+- [v] Mỗi thành viên có `report/team/MSSV_HoTen.md`
 
 **Bonus (tuỳ chọn)**
 - [ ] `send` gửi thật lên Telegram sau khi user xác nhận, có transcript chứng minh
